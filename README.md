@@ -1,8 +1,8 @@
 # Group 1
 Group Name: CtrlCVDawgs
 
-[MVP Link](https://docs.google.com/document/d/1xFI9DDdO5HZAcu36Y6NL-RTDry5E3WHkfy-ZEWuqbXM/edit?usp=sharing)
+[MVP Link](https://docs.google.com/document/d/1cMdAwLDgcoDFkCGtStcEAxgbV5_tLLvc/edit?usp=sharing&ouid=113895974445522191128&rtpof=true&sd=true)
 
-Team Members: STUDENTS_NETIDS
+Team Members: agy158, rishans2, rainalp2, tomxu2, wei56
 
-Project Manager: PM_NETID
+Project Manager: shrestd2, santino7
