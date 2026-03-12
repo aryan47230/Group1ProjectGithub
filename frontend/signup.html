@@ -18,14 +18,14 @@
   <input type="email" id="email" placeholder="Email" />
   <input type="password" id="password" placeholder="Password (min 6 chars)" />
   <input type="password" id="confirm" placeholder="Confirm password" />
-  <button onclick="handleSignUp()">Create Account</button>
+  <button id="signupBtn">Create Account</button>
   <div class="error" id="error"></div>
   <div class="link">Already have an account? <a href="login.html">Log in</a></div>
 
   <script type="module">
     import { signUp } from "./auth.js";
 
-    window.handleSignUp = async function () {
+    document.getElementById("signupBtn").addEventListener("click", async () => {
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
       const confirm = document.getElementById("confirm").value;
@@ -40,11 +40,11 @@
 
       try {
         await signUp(email, password);
-        window.location.href = "dashboard.html";  // redirect on success
+        window.location.href = "dashboard.html";
       } catch (err) {
         errorDiv.textContent = err.message;
       }
-    };
+    });
   </script>
 </body>
 </html>
