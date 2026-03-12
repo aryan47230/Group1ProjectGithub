@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login — PredMarket</title>
+  <style>
+    body { font-family: sans-serif; max-width: 400px; margin: 80px auto; padding: 0 20px; }
+    input { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    button { width: 100%; padding: 12px; background: #1a73e8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+    button:hover { background: #1558b0; }
+    .error { color: red; font-size: 14px; margin-top: 8px; }
+    .link { text-align: center; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <h2>Log in to PredMarket</h2>
+
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="password" placeholder="Password" />
+  <button onclick="handleLogin()">Log In</button>
+  <div class="error" id="error"></div>
+  <div class="link">No account? <a href="signup.html">Sign up</a></div>
+
+  <script type="module">
+    import { login } from "./auth.js";
+
+    window.handleLogin = async function () {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const errorDiv = document.getElementById("error");
+
+      errorDiv.textContent = "";
+
+      try {
+        await login(email, password);
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        errorDiv.textContent = err.message;
+      }
+    };
+  </script>
+</body>
+</html>
