@@ -1,1 +1,13 @@
 .DS_Store
+# Firebase secrets — NEVER commit these
+serviceAccountKey.json
+firebase-config.js
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Mac
+.DS_Store
