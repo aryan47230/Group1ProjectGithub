@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard — PredMarket</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
+    button { padding: 10px 20px; background: #d93025; color: white; border: none; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>Your Portfolio</h2>
+  <p id="welcome">Loading...</p>
+  <button onclick="handleLogout()">Log Out</button>
+
+  <script type="module">
+    import { watchAuth, logout, fetchProtected } from "./auth.js";
+
+    // If not logged in, kick back to login
+    watchAuth(async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      document.getElementById("welcome").textContent = `Welcome, ${user.email}`;
+
+      // Example: call your Python backend with auth token
+      const data = await fetchProtected("http://localhost:8000/profile");
+      console.log("Backend says:", data);
+    });
+
+    window.handleLogout = logout;
+  </script>
+</body>
+</html>

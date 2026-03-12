@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up — PredMarket</title>
+  <style>
+    body { font-family: sans-serif; max-width: 400px; margin: 80px auto; padding: 0 20px; }
+    input { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    button { width: 100%; padding: 12px; background: #1a73e8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+    button:hover { background: #1558b0; }
+    .error { color: red; font-size: 14px; margin-top: 8px; }
+    .link { text-align: center; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <h2>Create your PredMarket account</h2>
+
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="password" placeholder="Password (min 6 chars)" />
+  <input type="password" id="confirm" placeholder="Confirm password" />
+  <button onclick="handleSignUp()">Create Account</button>
+  <div class="error" id="error"></div>
+  <div class="link">Already have an account? <a href="login.html">Log in</a></div>
+
+  <script type="module">
+    import { signUp } from "./auth.js";
+
+    window.handleSignUp = async function () {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirm = document.getElementById("confirm").value;
+      const errorDiv = document.getElementById("error");
+
+      errorDiv.textContent = "";
+
+      if (password !== confirm) {
+        errorDiv.textContent = "Passwords do not match.";
+        return;
+      }
+
+      try {
+        await signUp(email, password);
+        window.location.href = "dashboard.html";  // redirect on success
+      } catch (err) {
+        errorDiv.textContent = err.message;
+      }
+    };
+  </script>
+</body>
+</html>
