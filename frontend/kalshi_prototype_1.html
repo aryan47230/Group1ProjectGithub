@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UIUC Kalshi</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF5500;
+    --orange-light: #FF6B1A;
+    --orange-pale: #FFF0E8;
+    --orange-card: #FFA366;
+    --bg: #ffffff;
+    --surface: #f7f7f7;
+    --border: #e8e8e8;
+    --text: #111111;
+    --muted: #888888;
+    --muted2: #555555;
+    --yes: #22c55e;
+    --no: #ef4444;
+    --yes-bg: #f0fdf4;
+    --no-bg: #fef2f2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #fff; color: var(--text); min-height: 100vh; }
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* NAVBAR */
+  .navbar { background: #fff; border-bottom: 1px solid var(--border); padding: 0 40px; }
+  .navbar-top { display: flex; align-items: center; height: 64px; gap: 28px; }
+  .nav-logo { font-size: 22px; font-weight: 800; color: var(--orange); cursor: pointer; letter-spacing: -0.5px; white-space: nowrap; }
+  .nav-links { display: flex; gap: 20px; flex: 1; }
+  .nav-link { font-size: 15px; font-weight: 500; color: var(--orange); cursor: pointer; background: none; border: none; font-family: 'Inter', sans-serif; transition: opacity 0.15s; }
+  .nav-link:hover { opacity: 0.7; }
+  .nav-search { display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--border); border-radius: 40px; padding: 8px 16px; width: 240px; }
+  .nav-search input { border: none; outline: none; font-size: 14px; color: var(--muted2); font-family: 'Inter', sans-serif; background: transparent; width: 100%; }
+  .btn-login { padding: 9px 22px; background: var(--orange); color: #fff; border: none; border-radius: 40px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; }
+  .btn-login:hover { background: var(--orange-light); }
+  .btn-signup { padding: 9px 22px; background: #1a1a2e; color: #fff; border: none; border-radius: 40px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .navbar-tabs { display: flex; border-top: 1px solid var(--border); }
+  .nav-tab { padding: 12px 16px; font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; background: none; border: none; font-family: 'Inter', sans-serif; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--text); font-weight: 700; border-bottom-color: var(--text); }
+  .nav-bal { background: var(--orange-pale); color: var(--orange); padding: 7px 14px; border-radius: 40px; font-size: 14px; font-weight: 600; font-family: 'DM Mono', monospace; border: 1px solid #ffd0b0; }
+  .nav-avatar { width: 36px; height: 36px; background: var(--orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; }
+  .nav-inner { padding: 6px 12px; border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--muted2); cursor: pointer; background: none; border: none; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+  .nav-inner:hover { background: var(--surface); color: var(--text); }
+  .nav-inner.active { background: var(--orange-pale); color: var(--orange); font-weight: 600; }
+
+  /* AUTH */
+  #page-auth { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #f5f5f5; }
+  .auth-frame { background: #fff; border: 1.5px solid #222; border-radius: 18px; width: 480px; padding: 56px 48px; }
+  .auth-logo { font-size: 26px; font-weight: 800; color: var(--orange); text-align: center; margin-bottom: 8px; }
+  .auth-sub { text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 36px; }
+  .auth-inp { background: #e8c4b0; border-radius: 40px; padding: 14px 20px; margin-bottom: 12px; }
+  .auth-inp input { width: 100%; border: none; outline: none; background: transparent; font-size: 15px; color: #555; font-family: 'Inter', sans-serif; }
+  .auth-btn { width: 100%; background: var(--orange); color: #fff; border: none; border-radius: 40px; padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; margin-bottom: 10px; transition: background 0.15s; }
+  .auth-btn:hover { background: var(--orange-light); }
+  .auth-btn.outline { background: #fff; color: var(--orange); border: 2px solid var(--orange); }
+  .auth-div { text-align: center; color: var(--muted); font-size: 13px; margin: 6px 0; }
+  .auth-sw { text-align: center; margin-top: 18px; font-size: 13px; color: var(--muted); }
+  .auth-sw a { color: var(--orange); font-weight: 600; cursor: pointer; }
+
+  /* HOME */
+  .home-layout { display: grid; grid-template-columns: 1fr 300px; max-width: 1280px; margin: 0 auto; padding: 28px 40px; gap: 0; }
+  .home-left { padding-right: 32px; }
+  .home-right { border-left: 1px solid var(--border); padding-left: 28px; }
+  .feat-card { background: var(--orange-card); border-radius: 18px; height: 220px; margin-bottom: 18px; cursor: pointer; transition: transform 0.15s; display: flex; align-items: flex-end; padding: 20px; position: relative; overflow: hidden; }
+  .feat-card:hover { transform: translateY(-2px); }
+  .card-lbl { background: rgba(0,0,0,0.18); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+  .card-prob { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.9); color: var(--orange); font-weight: 800; font-size: 15px; padding: 5px 12px; border-radius: 20px; font-family: 'DM Mono', monospace; }
+  .row3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 18px; }
+  .sm-card { background: var(--orange-card); border-radius: 14px; height: 120px; cursor: pointer; transition: transform 0.15s; display: flex; align-items: flex-end; padding: 12px; position: relative; }
+  .sm-card:hover { transform: translateY(-2px); }
+  .sm-lbl { background: rgba(0,0,0,0.15); color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .sm-prob { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); color: var(--orange); font-weight: 800; font-size: 11px; padding: 3px 8px; border-radius: 10px; font-family: 'DM Mono', monospace; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .md-card { background: var(--orange-card); border-radius: 14px; height: 160px; cursor: pointer; transition: transform 0.15s; display: flex; align-items: flex-end; padding: 14px; position: relative; }
+  .md-card:hover { transform: translateY(-2px); }
+  .md-lbl { background: rgba(0,0,0,0.15); color: #fff; padding: 5px 11px; border-radius: 14px; font-size: 12px; font-weight: 600; }
+  .md-prob { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.9); color: var(--orange); font-weight: 800; font-size: 13px; padding: 4px 10px; border-radius: 12px; font-family: 'DM Mono', monospace; }
+  .sb-head { font-size: 16px; font-weight: 600; color: var(--muted); font-style: italic; margin-bottom: 10px; cursor: pointer; }
+  .sb-head:hover { color: var(--orange); }
+  .sb-item { display: flex; gap: 8px; font-size: 14px; color: var(--text); padding: 5px 0; cursor: pointer; line-height: 1.4; }
+  .sb-item:hover { color: var(--orange); }
+  .sb-num { color: var(--muted); min-width: 18px; }
+  .sb-div { border: none; border-top: 1px solid var(--border); margin: 8px 0 16px; }
+  .sb-sec { margin-bottom: 24px; }
+
+  /* MARKET GRID */
+  .grid-page { max-width: 1280px; margin: 0 auto; padding: 28px 40px; }
+  .mkt-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+  .mkt-card { background: var(--orange-card); border-radius: 16px; height: 180px; cursor: pointer; transition: transform 0.15s; display: flex; align-items: flex-end; padding: 16px; position: relative; }
+  .mkt-card:hover { transform: translateY(-2px); }
+  .mc-lbl { background: rgba(0,0,0,0.15); color: #fff; padding: 5px 12px; border-radius: 14px; font-size: 12px; font-weight: 600; }
+  .mc-prob { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.92); color: var(--orange); font-weight: 800; font-size: 13px; padding: 4px 10px; border-radius: 12px; font-family: 'DM Mono', monospace; }
+
+  /* DETAIL */
+  .det-page { max-width: 1280px; margin: 0 auto; padding: 24px 40px; }
+  .back-btn { display: flex; align-items: center; gap: 6px; background: none; border: none; color: var(--muted); font-size: 14px; cursor: pointer; margin-bottom: 20px; font-family: 'Inter', sans-serif; transition: color 0.15s; }
+  .back-btn:hover { color: var(--text); }
+  .det-layout { display: grid; grid-template-columns: 1fr 340px; gap: 28px; align-items: start; }
+  .det-card { border: 1.5px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 18px; }
+  .det-cat { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--orange); margin-bottom: 10px; font-family: 'DM Mono', monospace; }
+  .det-title { font-size: 22px; font-weight: 700; line-height: 1.35; margin-bottom: 20px; }
+  .det-stats { display: flex; gap: 28px; margin-bottom: 20px; }
+  .dst { display: flex; flex-direction: column; gap: 3px; }
+  .dst-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; font-family: 'DM Mono', monospace; }
+  .dst-val { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 600; }
+  .dst-val.yes { color: var(--yes); }
+  .dst-val.no { color: var(--no); }
+  .dst-val.org { color: var(--orange); }
+  .chart-box { background: #fafafa; border-radius: 10px; padding: 16px; height: 150px; overflow: hidden; }
+  .chart-box svg { width: 100%; height: 100%; }
+  .time-tabs { display: flex; gap: 6px; margin-top: 10px; }
+  .tt { padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border); background: #fff; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; color: var(--muted); transition: all 0.15s; }
+  .tt.active { background: var(--text); color: #fff; border-color: var(--text); }
+  .trade-panel { border: 1.5px solid var(--border); border-radius: 16px; padding: 24px; position: sticky; top: 20px; }
+  .tp-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
+  .out-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+  .out-opt { padding: 14px 10px; border-radius: 12px; border: 2px solid transparent; background: var(--surface); cursor: pointer; text-align: center; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+  .out-opt.yes-o { border-color: #d1fae5; }
+  .out-opt.yes-o.sel, .out-opt.yes-o:hover { background: var(--yes-bg); border-color: var(--yes); }
+  .out-opt.no-o { border-color: #fee2e2; }
+  .out-opt.no-o.sel, .out-opt.no-o:hover { background: var(--no-bg); border-color: var(--no); }
+  .oo-lbl { font-size: 16px; font-weight: 700; }
+  .oo-p { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 3px; }
+  .inp-lbl { font-size: 12px; color: var(--muted); margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'DM Mono', monospace; }
+  .sh-row { display: flex; gap: 8px; margin-bottom: 18px; }
+  .sh-inp { flex: 1; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 14px; font-size: 18px; font-family: 'DM Mono', monospace; outline: none; color: var(--text); transition: border-color 0.15s; }
+  .sh-inp:focus { border-color: var(--orange); }
+  .qty-b { width: 40px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--surface); font-size: 18px; cursor: pointer; transition: background 0.15s; }
+  .qty-b:hover { background: var(--border); }
+  .ord-sum { background: var(--surface); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+  .or { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+  .or:last-child { margin-bottom: 0; }
+  .or .l { color: var(--muted); }
+  .or .v { font-family: 'DM Mono', monospace; }
+  .or.tot .v { color: var(--orange); font-weight: 700; font-size: 15px; }
+  .btn-trd { width: 100%; padding: 14px; background: var(--orange); color: #fff; border: none; border-radius: 40px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; }
+  .btn-trd:hover { background: var(--orange-light); }
+  .btn-sell { width: 100%; padding: 12px; background: var(--no-bg); color: var(--no); border: 1.5px solid #fca5a5; border-radius: 40px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 8px; transition: background 0.15s; }
+  .btn-sell:hover { background: #fee2e2; }
+
+  /* PORTFOLIO */
+  .port-page { max-width: 1280px; margin: 0 auto; padding: 28px 40px; }
+  .p-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 32px; }
+  .p-stat { border: 1.5px solid var(--border); border-radius: 14px; padding: 20px; }
+  .ps-l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+  .ps-v { font-family: 'DM Mono', monospace; font-size: 26px; font-weight: 600; }
+  .ps-v.org { color: var(--orange); }
+  .ps-v.grn { color: var(--yes); }
+  .ps-v.red { color: var(--no); }
+  .ps-s { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .sec-hd { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  .h-tbl { border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 32px; }
+  .h-hd { display: grid; grid-template-columns: 2fr 90px 90px 100px 110px; padding: 11px 20px; background: var(--surface); border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; font-family: 'DM Mono', monospace; gap: 16px; }
+  .h-row { display: grid; grid-template-columns: 2fr 90px 90px 100px 110px; padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 13px; align-items: center; gap: 16px; transition: background 0.1s; }
+  .h-row:last-child { border-bottom: none; }
+  .h-row:hover { background: var(--surface); }
+  .h-mkt { font-weight: 500; cursor: pointer; }
+  .h-mkt:hover { color: var(--orange); }
+  .bdg { padding: 3px 9px; border-radius: 6px; font-size: 11px; font-weight: 700; font-family: 'DM Mono', monospace; display: inline-block; }
+  .bdg-yes { background: var(--yes-bg); color: var(--yes); }
+  .bdg-no { background: var(--no-bg); color: var(--no); }
+  .nm { font-family: 'DM Mono', monospace; text-align: right; }
+  .nm.pos { color: var(--yes); }
+  .nm.neg { color: var(--no); }
+  .sell-s { padding: 6px 14px; background: var(--no-bg); color: var(--no); border: 1px solid #fca5a5; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; text-align: center; }
+  .sell-s:hover { background: #fee2e2; }
+
+  /* HISTORY */
+  .tx-page { max-width: 1280px; margin: 0 auto; padding: 28px 40px; }
+  .tx-tbl { border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .tx-hd { display: grid; grid-template-columns: 2fr 80px 80px 90px 110px 110px; padding: 11px 20px; background: var(--surface); border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; font-family: 'DM Mono', monospace; gap: 12px; }
+  .tx-row { display: grid; grid-template-columns: 2fr 80px 80px 90px 110px 110px; padding: 13px 20px; border-bottom: 1px solid var(--border); font-size: 13px; align-items: center; gap: 12px; transition: background 0.1s; }
+  .tx-row:last-child { border-bottom: none; }
+  .tx-row:hover { background: var(--surface); }
+  .ty-b { padding: 3px 9px; border-radius: 6px; font-size: 11px; font-weight: 700; font-family: 'DM Mono', monospace; display: inline-block; }
+  .ty-buy { background: #f0fdf4; color: var(--yes); }
+  .ty-sell { background: var(--no-bg); color: var(--no); }
+  .tx-d { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); text-align: right; }
+
+  /* ADMIN */
+  .adm-page { max-width: 1280px; margin: 0 auto; padding: 28px 40px; }
+  .a-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 32px; }
+  .a-stat { border: 1.5px solid var(--border); border-radius: 14px; padding: 20px; }
+  .a-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+  .a-val { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 600; }
+  .a-val.org { color: var(--orange); }
+  .res-list { display: flex; flex-direction: column; gap: 12px; }
+  .res-row { border: 1.5px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; transition: background 0.1s; }
+  .res-row:hover { background: var(--surface); }
+  .res-t { flex: 1; font-size: 14px; font-weight: 500; }
+  .res-dt { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; width: 110px; text-align: center; }
+  .res-acts { display: flex; gap: 8px; }
+  .btn-ry { padding: 7px 16px; background: var(--yes-bg); color: var(--yes); border: 1.5px solid #86efac; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'DM Mono', monospace; transition: background 0.15s; }
+  .btn-ry:hover { background: #dcfce7; }
+  .btn-rn { padding: 7px 16px; background: var(--no-bg); color: var(--no); border: 1.5px solid #fca5a5; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'DM Mono', monospace; transition: background 0.15s; }
+  .btn-rn:hover { background: #fee2e2; }
+  .rbdg { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; font-family: 'DM Mono', monospace; }
+  .rbdg.yes { background: var(--yes-bg); color: var(--yes); }
+  .rbdg.no { background: var(--no-bg); color: var(--no); }
+
+  .pg-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .pg-title { font-size: 24px; font-weight: 800; }
+
+  #toast { position: fixed; bottom: 24px; right: 24px; background: #111; color: #fff; padding: 14px 20px; border-radius: 12px; font-size: 14px; z-index: 9999; transform: translateY(60px); opacity: 0; transition: all 0.3s ease; max-width: 300px; font-family: 'Inter', sans-serif; border-left: 4px solid var(--orange); }
+  #toast.show { transform: translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="page-auth" class="page active">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f5f5f5;">
+    <div class="auth-frame">
+      <div class="auth-logo">UIUC Kalshi</div>
+      <div class="auth-sub">Trade on anything that matters.</div>
+      <div id="af-login">
+        <div class="auth-inp"><input type="email" placeholder="Email address"></div>
+        <div class="auth-inp"><input type="password" placeholder="Password"></div>
+        <button class="auth-btn" style="margin-top:16px;" onclick="doLogin()">Login with Email</button>
+        <div class="auth-div">or</div>
+        <button class="auth-btn outline" onclick="doLogin()">Login with Google</button>
+        <div class="auth-sw">No account? <a onclick="document.getElementById('af-login').style.display='none';document.getElementById('af-signup').style.display='block'">Sign up</a></div>
+      </div>
+      <div id="af-signup" style="display:none;">
+        <div class="auth-inp"><input type="text" placeholder="Full name"></div>
+        <div class="auth-inp"><input type="email" placeholder="Email address"></div>
+        <div class="auth-inp"><input type="password" placeholder="Password"></div>
+        <button class="auth-btn" style="margin-top:16px;" onclick="doLogin()">Create Account</button>
+        <div class="auth-div">or</div>
+        <button class="auth-btn outline" onclick="doLogin()">Sign up with Google</button>
+        <div class="auth-sw">Have account? <a onclick="document.getElementById('af-signup').style.display='none';document.getElementById('af-login').style.display='block'">Log in</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="page-app" class="page">
+  <div class="navbar">
+    <div class="navbar-top">
+      <div class="nav-logo" onclick="showS('home')">UIUC Kalshi</div>
+      <div class="nav-links">
+        <button class="nav-link" onclick="showS('home')">Market</button>
+        <button class="nav-link">Live</button>
+        <button class="nav-link">Social</button>
+        <button class="nav-link">Fairness</button>
+        <button class="nav-link">Research</button>
+      </div>
+      <div class="nav-search">
+        <svg width="15" height="15" fill="none" stroke="#888" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input placeholder="Trade on anything">
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div class="nav-bal" id="nav-bal">$1,000.00</div>
+        <button class="nav-inner" id="nb-port" onclick="showS('portfolio')">Portfolio</button>
+        <button class="nav-inner" id="nb-hist" onclick="showS('history')">History</button>
+        <button class="nav-inner" id="nb-adm" onclick="showS('admin')">⚙ Admin</button>
+        <div class="nav-avatar">AJ</div>
+      </div>
+    </div>
+    <div class="navbar-tabs">
+      <button class="nav-tab active" onclick="tabClick('trending',this)">Trending</button>
+      <button class="nav-tab" onclick="tabClick('politics',this)">Politics</button>
+      <button class="nav-tab" onclick="tabClick('sports',this)">Sports</button>
+      <button class="nav-tab" onclick="tabClick('culture',this)">Culture</button>
+      <button class="nav-tab" onclick="tabClick('climate',this)">Climate</button>
+      <button class="nav-tab" onclick="tabClick('technology',this)">Technology</button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div id="s-home">
+    <div class="home-layout">
+      <div class="home-left">
+        <div class="feat-card" onclick="openM(1)">
+          <span class="card-lbl">Will the Fed cut rates in Q2 2026?</span>
+          <span class="card-prob">68%</span>
+        </div>
+        <div class="row3">
+          <div class="sm-card" onclick="openM(2)"><span class="sm-lbl">Apple foldable iPhone?</span><span class="sm-prob">34%</span></div>
+          <div class="sm-card" onclick="openM(3)"><span class="sm-lbl">US-China trade deal?</span><span class="sm-prob">29%</span></div>
+          <div class="sm-card" onclick="openM(4)"><span class="sm-lbl">NBA 150pt game?</span><span class="sm-prob">51%</span></div>
+        </div>
+        <div class="row2">
+          <div class="md-card" onclick="openM(5)"><span class="md-lbl">Bitcoin $150K by July?</span><span class="md-prob">42%</span></div>
+          <div class="md-card" onclick="openM(6)"><span class="md-lbl">GPT-5 released in 2026?</span><span class="md-prob">77%</span></div>
+        </div>
+      </div>
+      <div class="home-right">
+        <div class="sb-sec">
+          <div class="sb-head">Trending ></div>
+          <div class="sb-item" onclick="openM(1)"><span class="sb-num">1.</span>Will the Fed cut rates in Q2 2026?</div>
+          <div class="sb-item" onclick="openM(4)"><span class="sb-num">2.</span>NBA 150+ points in a playoff game</div>
+        </div>
+        <hr class="sb-div">
+        <div class="sb-sec">
+          <div class="sb-head">Politics ></div>
+          <div class="sb-item" onclick="openM(3)"><span class="sb-num">1.</span>US-China trade deal in 2026?</div>
+          <div class="sb-item"><span class="sb-num">2.</span>Senate Republicans lose primary?</div>
+        </div>
+        <hr class="sb-div">
+        <div class="sb-sec">
+          <div class="sb-head">Sports ></div>
+          <div class="sb-item" onclick="openM(4)"><span class="sb-num">1.</span>NBA team scores 150+ in playoffs</div>
+          <div class="sb-item"><span class="sb-num">2.</span>UFC title fight prediction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARKETS GRID -->
+  <div id="s-markets" style="display:none;">
+    <div class="grid-page">
+      <div class="pg-hd"><div class="pg-title" id="grid-title">Markets</div></div>
+      <div class="mkt-grid" id="mkt-grid"></div>
+    </div>
+  </div>
+
+  <!-- DETAIL -->
+  <div id="s-detail" style="display:none;">
+    <div class="det-page">
+      <button class="back-btn" onclick="goBack()">← Back</button>
+      <div class="det-layout">
+        <div>
+          <div class="det-card">
+            <div class="det-cat" id="dc-cat">POLITICS</div>
+            <div class="det-title" id="dc-title">Market title</div>
+            <div class="det-stats">
+              <div class="dst"><span class="dst-lbl">YES</span><span class="dst-val yes" id="dc-yes">68¢</span></div>
+              <div class="dst"><span class="dst-lbl">NO</span><span class="dst-val no" id="dc-no">32¢</span></div>
+              <div class="dst"><span class="dst-lbl">Volume</span><span class="dst-val org" id="dc-vol">$41.2K</span></div>
+              <div class="dst"><span class="dst-lbl">Closes</span><span class="dst-val" style="font-size:15px;" id="dc-close">Jun 30</span></div>
+            </div>
+            <div class="chart-box">
+              <svg id="dc-chart" viewBox="0 0 600 110" preserveAspectRatio="none">
+                <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF5500" stop-opacity="0.15"/><stop offset="100%" stop-color="#FF5500" stop-opacity="0"/></linearGradient></defs>
+                <path id="cf" fill="url(#cg)"/>
+                <path id="cl" fill="none" stroke="#FF5500" stroke-width="2.5"/>
+              </svg>
+            </div>
+            <div class="time-tabs">
+              <button class="tt active" onclick="selTT(this)">now</button>
+              <button class="tt" onclick="selTT(this)">today</button>
+              <button class="tt" onclick="selTT(this)">this week</button>
+              <button class="tt" onclick="selTT(this)">this month</button>
+            </div>
+          </div>
+          <div class="det-card">
+            <div class="sec-hd">About this Market</div>
+            <p id="dc-desc" style="font-size:14px;color:var(--muted2);line-height:1.7;"></p>
+          </div>
+        </div>
+        <div class="trade-panel">
+          <div class="tp-title">Place Order</div>
+          <div class="out-row">
+            <div class="out-opt yes-o sel" id="oo-yes" onclick="selOut('YES')">
+              <div class="oo-lbl" style="color:var(--yes);">YES</div>
+              <div class="oo-p" id="oo-yp">68¢</div>
+            </div>
+            <div class="out-opt no-o" id="oo-no" onclick="selOut('NO')">
+              <div class="oo-lbl" style="color:var(--no);">NO</div>
+              <div class="oo-p" id="oo-np">32¢</div>
+            </div>
+          </div>
+          <div class="inp-lbl">Number of Shares</div>
+          <div class="sh-row">
+            <button class="qty-b" onclick="csh(-10)">−</button>
+            <input class="sh-inp" type="number" id="sh-inp" value="10" min="1" oninput="updOrd()">
+            <button class="qty-b" onclick="csh(10)">+</button>
+          </div>
+          <div class="ord-sum">
+            <div class="or"><span class="l">Price / share</span><span class="v" id="op">$0.68</span></div>
+            <div class="or"><span class="l">Shares</span><span class="v" id="os">10</span></div>
+            <div class="or"><span class="l">Payout if correct</span><span class="v" id="opa">$10.00</span></div>
+            <div class="or tot"><span class="l" style="font-weight:600;">Total Cost</span><span class="v" id="ot">$6.80</span></div>
+          </div>
+          <button class="btn-trd" id="trd-btn" onclick="execBuy()">Buy YES Shares</button>
+          <button class="btn-sell" onclick="execSell()">Sell Position</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PORTFOLIO -->
+  <div id="s-portfolio" style="display:none;">
+    <div class="port-page">
+      <div class="pg-hd"><div class="pg-title">My Portfolio</div></div>
+      <div class="p-stats">
+        <div class="p-stat"><div class="ps-l">Balance</div><div class="ps-v org" id="pp-bal">$1,000.00</div><div class="ps-s">Virtual currency</div></div>
+        <div class="p-stat"><div class="ps-l">Holdings Value</div><div class="ps-v" id="pp-hv">$0.00</div><div class="ps-s">Current positions</div></div>
+        <div class="p-stat"><div class="ps-l">Total P&L</div><div class="ps-v grn" id="pp-pnl">+$0.00</div><div class="ps-s">Unrealized</div></div>
+        <div class="p-stat"><div class="ps-l">Open Positions</div><div class="ps-v" id="pp-pos">0</div><div class="ps-s">Active markets</div></div>
+      </div>
+      <div class="sec-hd">Current Holdings</div>
+      <div class="h-tbl">
+        <div class="h-hd"><span>Market</span><span>Position</span><span style="text-align:right">Shares</span><span style="text-align:right">P&L</span><span></span></div>
+        <div id="h-body"><div style="padding:20px;color:var(--muted);font-size:14px;">No open positions yet. Start trading!</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="s-history" style="display:none;">
+    <div class="tx-page">
+      <div class="pg-hd"><div class="pg-title">Transaction History</div></div>
+      <div class="tx-tbl">
+        <div class="tx-hd"><span>Market</span><span>Type</span><span>Outcome</span><span style="text-align:right">Shares</span><span style="text-align:right">Amount</span><span style="text-align:right">Date</span></div>
+        <div id="tx-body"><div style="padding:20px;color:var(--muted);font-size:14px;">No transactions yet.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="s-admin" style="display:none;">
+    <div class="adm-page">
+      <div class="pg-hd"><div class="pg-title">Admin Panel</div></div>
+      <div class="a-stats">
+        <div class="a-stat"><div class="a-lbl">Active Markets</div><div class="a-val">6</div></div>
+        <div class="a-stat"><div class="a-lbl">Total Users</div><div class="a-val">128</div></div>
+        <div class="a-stat"><div class="a-lbl">Total Volume</div><div class="a-val org">$142K</div></div>
+        <div class="a-stat"><div class="a-lbl">Pending Resolution</div><div class="a-val" style="color:#f59e0b;">3</div></div>
+      </div>
+      <div class="sec-hd">Resolve Markets</div>
+      <div class="res-list" id="res-list"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const MKT = [
+  {id:1,cat:'POLITICS',title:'Will the Fed cut rates in Q2 2026?',prob:68,vol:'$41,200',close:'Jun 30, 2026',desc:'Resolves YES if the Federal Reserve announces at least one interest rate cut during Q2 2026 (April–June), based on official FOMC press releases.'},
+  {id:2,cat:'TECH',title:'Will Apple release a foldable iPhone before end of 2026?',prob:34,vol:'$18,800',close:'Dec 31, 2026',desc:'Resolves YES if Apple officially announces and ships a foldable iPhone device by December 31, 2026.'},
+  {id:3,cat:'POLITICS',title:'Will there be a US-China trade deal signed in 2026?',prob:29,vol:'$55,600',close:'Dec 31, 2026',desc:'Resolves YES if the US and China formally sign a comprehensive bilateral trade agreement in 2026, verified by official government sources.'},
+  {id:4,cat:'SPORTS',title:'Will an NBA team score 150+ points in a playoff game?',prob:51,vol:'$9,300',close:'Jun 15, 2026',desc:'Resolves YES if any team scores 150+ points in a single official NBA playoff game during the 2025–26 postseason.'},
+  {id:5,cat:'FINANCE',title:'Will Bitcoin reach $150,000 before July 2026?',prob:42,vol:'$88,400',close:'Jun 30, 2026',desc:'Resolves YES if Bitcoin reaches a closing price of $150,000 USD or higher on Coinbase, Binance, or Kraken before July 1, 2026.'},
+  {id:6,cat:'TECH',title:'Will OpenAI release GPT-5 publicly in 2026?',prob:77,vol:'$32,100',close:'Dec 31, 2026',desc:'Resolves YES if OpenAI makes GPT-5 publicly available via API or consumer product in 2026.'},
+];
+let bal=1000, holdings=[], txns=[], selO='YES', curM=null, prevS='home', resolved={};
+const gm=id=>MKT.find(m=>m.id===id);
+
+function doLogin(){
+  document.getElementById('page-auth').style.display='none';
+  document.getElementById('page-app').style.display='block';
+  showS('home');
+}
+
+const SECS=['home','markets','detail','portfolio','history','admin'];
+function showS(n){
+  SECS.forEach(s=>{const e=document.getElementById('s-'+s);if(e)e.style.display=s===n?'block':'none';});
+  ['port','hist','adm'].forEach(s=>{
+    const b=document.getElementById('nb-'+s);
+    if(b)b.classList.toggle('active',('portfolio'.startsWith(s)||'history'.startsWith(s)||'admin'.startsWith(s))&&n===({'port':'portfolio','hist':'history','adm':'admin'}[s]));
+  });
+  if(n==='portfolio')renderPort();
+  if(n==='history')renderHist();
+  if(n==='admin')renderAdmin();
+}
+
+function tabClick(cat,el){
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  if(cat==='trending'){showS('home');return;}
+  const filtered=cat==='all'?MKT:MKT.filter(m=>m.cat.toLowerCase()===cat);
+  document.getElementById('grid-title').textContent=cat.charAt(0).toUpperCase()+cat.slice(1)+' Markets';
+  document.getElementById('mkt-grid').innerHTML=(filtered.length?filtered:MKT).map(m=>`
+    <div class="mkt-card" onclick="openM(${m.id})">
+      <span class="mc-lbl">${m.title}</span>
+      <span class="mc-prob">${m.prob}%</span>
+    </div>`).join('');
+  showS('markets');
+}
+
+function openM(id){
+  prevS='home';
+  curM=id; const m=gm(id);
+  document.getElementById('dc-cat').textContent=m.cat;
+  document.getElementById('dc-title').textContent=m.title;
+  document.getElementById('dc-yes').textContent=m.prob+'¢';
+  document.getElementById('dc-no').textContent=(100-m.prob)+'¢';
+  document.getElementById('dc-vol').textContent=m.vol;
+  document.getElementById('dc-close').textContent=m.close;
+  document.getElementById('dc-desc').textContent=m.desc;
+  document.getElementById('oo-yp').textContent=m.prob+'¢';
+  document.getElementById('oo-np').textContent=(100-m.prob)+'¢';
+  selO='YES';
+  document.getElementById('oo-yes').classList.add('sel');
+  document.getElementById('oo-no').classList.remove('sel');
+  document.getElementById('sh-inp').value=10;
+  updOrd(); drawC(m.prob);
+  showS('detail');
+}
+
+function goBack(){showS(prevS==='detail'?'home':prevS);}
+
+function selTT(el){document.querySelectorAll('.tt').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+
+function drawC(p){
+  const pts=[];let v=p*0.65+Math.random()*6;
+  for(let i=0;i<30;i++){v+=(Math.random()-0.47)*4;v=Math.max(5,Math.min(95,v));pts.push(v);}
+  pts.push(p);
+  const W=600,H=110,xs=pts.map((_,i)=>i/(pts.length-1)*W),ys=pts.map(pp=>H-(pp/100)*(H-10)-5);
+  const ln=xs.map((x,i)=>`${i===0?'M':'L'}${x},${ys[i]}`).join(' ');
+  document.getElementById('cl').setAttribute('d',ln);
+  document.getElementById('cf').setAttribute('d',ln+` L${W},${H} L0,${H} Z`);
+}
+
+function selOut(o){
+  selO=o;
+  document.getElementById('oo-yes').classList.toggle('sel',o==='YES');
+  document.getElementById('oo-no').classList.toggle('sel',o==='NO');
+  updOrd();
+}
+
+function csh(d){const i=document.getElementById('sh-inp');i.value=Math.max(1,parseInt(i.value||0)+d);updOrd();}
+
+function updOrd(){
+  const m=gm(curM);if(!m)return;
+  const sh=parseInt(document.getElementById('sh-inp').value)||0;
+  const pr=selO==='YES'?m.prob/100:(100-m.prob)/100;
+  document.getElementById('op').textContent='$'+pr.toFixed(2);
+  document.getElementById('os').textContent=sh;
+  document.getElementById('opa').textContent='$'+(sh*1).toFixed(2);
+  document.getElementById('ot').textContent='$'+(sh*pr).toFixed(2);
+  document.getElementById('trd-btn').textContent='Buy '+selO+' Shares';
+}
+
+function execBuy(){
+  const m=gm(curM),sh=parseInt(document.getElementById('sh-inp').value)||0;
+  const pr=selO==='YES'?m.prob/100:(100-m.prob)/100,tot=sh*pr;
+  if(tot>bal){toast('❌ Insufficient balance');return;}
+  bal-=tot;updBal();
+  const ex=holdings.find(h=>h.mid===curM&&h.out===selO);
+  if(ex)ex.sh+=sh; else holdings.push({mid:curM,out:selO,sh,avgP:pr});
+  txns.unshift({mid:curM,type:'BUY',out:selO,sh,amt:tot,date:new Date()});
+  toast('✅ Bought '+sh+' '+selO+' shares — $'+tot.toFixed(2));
+}
+
+function execSell(){
+  const pos=holdings.find(h=>h.mid===curM);if(!pos){toast('No position to sell');return;}
+  const m=gm(curM),pr=pos.out==='YES'?m.prob/100:(100-m.prob)/100,tot=pos.sh*pr;
+  bal+=tot;updBal();
+  txns.unshift({mid:curM,type:'SELL',out:pos.out,sh:pos.sh,amt:tot,date:new Date()});
+  holdings=holdings.filter(h=>!(h.mid===curM&&h.out===pos.out));
+  toast('✅ Sold position — $'+tot.toFixed(2));
+}
+
+function renderPort(){
+  document.getElementById('pp-bal').textContent='$'+bal.toFixed(2);
+  let hv=0,pnl=0;
+  holdings.forEach(h=>{const m=gm(h.mid),cp=h.out==='YES'?m.prob/100:(100-m.prob)/100;hv+=h.sh*cp;pnl+=h.sh*(cp-h.avgP);});
+  document.getElementById('pp-hv').textContent='$'+hv.toFixed(2);
+  const pe=document.getElementById('pp-pnl');
+  pe.textContent=(pnl>=0?'+':'-')+'$'+Math.abs(pnl).toFixed(2);
+  pe.className='ps-v '+(pnl>=0?'grn':'red');
+  document.getElementById('pp-pos').textContent=holdings.length;
+  const b=document.getElementById('h-body');
+  if(!holdings.length){b.innerHTML='<div style="padding:20px;color:var(--muted);font-size:14px;">No open positions yet. Start trading!</div>';return;}
+  b.innerHTML=holdings.map(h=>{
+    const m=gm(h.mid),cp=h.out==='YES'?m.prob/100:(100-m.prob)/100,pl=h.sh*(cp-h.avgP);
+    return `<div class="h-row"><span class="h-mkt" onclick="openM(${m.id})">${m.title}</span><span><span class="bdg bdg-${h.out.toLowerCase()}">${h.out}</span></span><span class="nm" style="text-align:right">${h.sh}</span><span class="nm ${pl>=0?'pos':'neg'}" style="text-align:right">${pl>=0?'+':''}$${pl.toFixed(2)}</span><span class="sell-s" onclick="sellP(${h.mid},'${h.out}')">Sell</span></div>`;
+  }).join('');
+}
+
+function sellP(mid,out){
+  const pos=holdings.find(h=>h.mid===mid&&h.out===out);if(!pos)return;
+  const m=gm(mid),pr=out==='YES'?m.prob/100:(100-m.prob)/100,tot=pos.sh*pr;
+  bal+=tot;updBal();
+  txns.unshift({mid,type:'SELL',out,sh:pos.sh,amt:tot,date:new Date()});
+  holdings=holdings.filter(h=>!(h.mid===mid&&h.out===out));
+  toast('✅ Sold — $'+tot.toFixed(2));
+  renderPort();
+}
+
+function renderHist(){
+  const b=document.getElementById('tx-body');
+  if(!txns.length){b.innerHTML='<div style="padding:20px;color:var(--muted);font-size:14px;">No transactions yet.</div>';return;}
+  b.innerHTML=txns.map(tx=>{
+    const m=gm(tx.mid),d=new Date(tx.date),ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    return `<div class="tx-row"><span style="font-weight:500">${m.title.length>52?m.title.substring(0,52)+'…':m.title}</span><span><span class="ty-b ty-${tx.type.toLowerCase()}">${tx.type}</span></span><span><span class="bdg bdg-${tx.out.toLowerCase()}">${tx.out}</span></span><span class="nm">${tx.sh}</span><span class="nm ${tx.type==='SELL'?'pos':''}">${tx.type==='SELL'?'+':'−'}$${tx.amt.toFixed(2)}</span><span class="tx-d">${ds}</span></div>`;
+  }).join('');
+}
+
+function renderAdmin(){
+  document.getElementById('res-list').innerHTML=MKT.map(m=>{
+    const r=resolved[m.id];
+    return `<div class="res-row"><div class="res-t">${m.title}</div><div class="res-dt">${m.close}</div>${r?`<span class="rbdg ${r.toLowerCase()}">RESOLVED ${r}</span>`:`<div class="res-acts"><button class="btn-ry" onclick="resM(${m.id},'YES')">YES</button><button class="btn-rn" onclick="resM(${m.id},'NO')">NO</button></div>`}</div>`;
+  }).join('');
+}
+
+function resM(id,out){
+  resolved[id]=out;
+  const wins=holdings.filter(h=>h.mid===id&&h.out===out);
+  const pay=wins.reduce((s,h)=>s+h.sh,0);
+  if(pay>0){bal+=pay;updBal();toast('🏆 Resolved '+out+'! Payout: $'+pay.toFixed(2));}
+  else toast('Market resolved '+out+'. No winning positions.');
+  holdings=holdings.filter(h=>h.mid!==id);
+  renderAdmin();
+}
+
+function updBal(){document.getElementById('nav-bal').textContent='$'+bal.toFixed(2);}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+</script>
+</body>
+</html>
