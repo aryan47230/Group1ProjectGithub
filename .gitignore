@@ -3,7 +3,8 @@
 serviceAccountKey.json
 firebase-config.js
 .env
-
+#DATABASE
+MONGO_URI=mongodb://atlas-sql-69cea90a3eeb5fdc5fceca2d-x3qc8q.a.query.mongodb.net/sample_mflix?ssl=true&authSource=admin
 # Python
 __pycache__/
 *.pyc
